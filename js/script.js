@@ -11,7 +11,7 @@ const word = "purple";
 const guessedLetters = [];
 
 //Display word with placeholders for current word
-const updateText = function(word){
+const placeholderText = function(word){
   placeholder = ""
   for(var letter in word){
     placeholder += '●';
@@ -20,7 +20,7 @@ const updateText = function(word){
   wordInProgress.innerText = placeholder;
 };
 
-updateText(word);
+placeholderText(word);
 
 guessButton.addEventListener('click',function(e){
   e.preventDefault();
@@ -59,6 +59,41 @@ const makeGuess = function(letter){
     message.innerText = "You have already guessed this letter. Please try a new letter"
   } else {
     guessedLetters.push(letter);
+    updateLetters();
     console.log(guessedLetters);
+    updateWordProgress(guessedLetters);
   }
+}
+
+const updateLetters = function () {
+  guessedLettersElement.innerHTML = '';
+  for (const letter of guessedLetters){
+    const li = document.createElement("li");
+    li.innerText = letter;
+    guessedLettersElement.append(li);
+  }
+}
+
+const updateWordProgress = function (guessedLetters){
+  const wordUpper = word.toUpperCase();
+  const wordArray = wordUpper.split("");
+  const newPlaceholder = [];
+  for(const letter of wordArray){
+    if(guessedLetters.includes(letter)){
+      newPlaceholder.push(letter.toUpperCase());
+    } else {
+      newPlaceholder.push("●");
+    }
+  }
+  //console.log(newPlaceholder);
+  wordInProgress.innerText = newPlaceholder.join("");
+  checkIfWon();
+}
+
+const checkIfWon = function(){
+  if (word.toUpperCase() === wordInProgress.innerText){
+    message.classList.add("win");
+    message.innerHTML = `<p class="highlight">You guessed correct the word! Congrats!</p>`;
+  }
+
 }
