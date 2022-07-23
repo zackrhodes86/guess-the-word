@@ -7,8 +7,20 @@ const remianingGuessSpan = document.querySelector(".remaining span");
 const playAgain = document.querySelector(".play-again");
 const message = document.querySelector(".message");
 
-const word = "purple";
+let word = "purple";
 const guessedLetters = [];
+let remianingGuesses = 8;
+
+const getWord = async function(){
+  const res = await fetch('https://gist.githubusercontent.com/skillcrush-curriculum/7061f1d4d3d5bfe47efbfbcfe42bf57e/raw/5ffc447694486e7dea686f34a6c085ae371b43fe/words.txt');
+  const words = await res.text();
+  const wordArray = words.split("\n");
+  const randomIndex = Math.floor(Math.random() * wordArray.length);
+  word = wordArray[randomIndex].trim();
+  placeholderText(word);
+}
+//start the game;
+getWord();
 
 //Display word with placeholders for current word
 const placeholderText = function(word){
@@ -19,8 +31,6 @@ const placeholderText = function(word){
   console.log(placeholder);
   wordInProgress.innerText = placeholder;
 };
-
-placeholderText(word);
 
 guessButton.addEventListener('click',function(e){
   e.preventDefault();
@@ -36,9 +46,6 @@ guessButton.addEventListener('click',function(e){
   }
   letterInput.value ="";
 });
-
-console.log(`${guessButton}, ${guessButton}`);
-
 
 const checkInput = function (input) {
   const acceptedLetter = /[a-zA-Z]/;
@@ -62,6 +69,7 @@ const makeGuess = function(letter){
     updateLetters();
     console.log(guessedLetters);
     updateWordProgress(guessedLetters);
+    countRemainingGuesses(letter);
   }
 }
 
@@ -88,6 +96,28 @@ const updateWordProgress = function (guessedLetters){
   //console.log(newPlaceholder);
   wordInProgress.innerText = newPlaceholder.join("");
   checkIfWon();
+}
+
+const countRemainingGuesses = function (guess){
+  const wordUpper = word.toUpperCase();
+  const wordArray = wordUpper.split("");
+
+    if(wordArray.includes(guess)){
+      message.innerText = `${guess} is in the word!`
+        console.log("Hi");
+    } else {
+      remianingGuesses -= 1;
+        console.log("Hello");
+    }
+    if (remianingGuesses === 0){
+      message.innerText = "You have no more guesses!"
+      remainingGuessElement.innerText = `No more guesses :'(, the word was ${word}`;
+    } else if (remianingGuesses === 1){
+      remainingGuessElement.innerText = "This is your last guess!"
+    } else {
+      remianingGuessSpan.innerText = `${remianingGuesses} guesses`;
+    }
+
 }
 
 const checkIfWon = function(){
